@@ -8,7 +8,6 @@ function App() {
      return (
      <>
       <Routes>
-
           <Route path='/' element={<ListView />} />
           <Route path='/CalenderView' element={<CalenderView />} />
           {/* Error 404 Page */}
