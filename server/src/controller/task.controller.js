@@ -1,4 +1,4 @@
-import { addTask, getTask, isComplete, deleteTask } from "../model/task.model.js";
+import { addTask, getTask, isComplete, deleteTask, isPending } from "../model/task.model.js";
 
 export const createTask = async (req, res) => {
      const {title, description, time, date, user_Id} = req.body
@@ -33,6 +33,16 @@ export const completeTask = async (req, res) => {
           const result = await isComplete(task_Id)
           console.log(result)
           res.status(200).json({message:'task completed successfully', result})
+     } catch (error) {
+          console.error(error.message);
+     }
+}
+export const pendingTask = async (req, res) => {
+     const {task_Id} = req.params
+     try {
+          const result = await isPending(task_Id)
+          console.log(result)
+          res.status(200).json({message:'task is now pending', result})
      } catch (error) {
           console.error(error.message);
      }
