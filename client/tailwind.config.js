@@ -12,7 +12,7 @@ export default {
                     padding: '4rem',
                },
                colors: {
-                    'color1': '#878AF5',
+                    'color1': '#713DD9',
                     'color2': '#666AF6',
                     'color3': '#31446c',                                                  
                },

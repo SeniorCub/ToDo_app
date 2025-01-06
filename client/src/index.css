@@ -12,3 +12,12 @@ img{
      height: 100%;
      object-fit: contain;
 }
+.omo{
+     background: url('./assets/images/bg.svg');
+     background-size: cover;
+     background-repeat: no-repeat;
+     @apply w-svw h-full flex items-center justify-center
+}
+input::placeholder{
+     @apply text-gray-200
+}
