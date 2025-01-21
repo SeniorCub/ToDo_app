@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import { Routes, Route } from 'react-router-dom'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import Home from './pages/Home'
 
 function App() {
      return (
@@ -14,6 +15,7 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/home' element={<Home />} />
           {/* Error 404 Page */}
           <Route path='*' element={<Error />} />
       </Routes>

@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@splinetool/react-spline": "^4.0.0",
+    "@splinetool/runtime": "^1.9.59",
     "axios": "^1.7.7",
     "dom": "^0.0.3",
     "formik": "^2.4.6",
