@@ -18,6 +18,15 @@ img{
      background-repeat: no-repeat;
      @apply w-svw h-full flex items-center justify-center
 }
-input::placeholder{
-     @apply text-gray-200
+.aktive{
+     @apply text-color1 underline underline-offset-2
+}
+.notes > .note{
+     @apply border border-color1 rounded-lg h-max w-full text-xs p-2 text-black bg-color3/5
+}
+.note h1{
+     @apply text-base font-bold
+}
+.note p{
+     @apply text-gray-700
 }

@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { CgClose } from 'react-icons/cg';
 
 const validationSchema = Yup.object().shape({
      title: Yup.string().required('Title is required'),
@@ -56,35 +57,36 @@ const CreateTask = () => {
 
      return (
           <>
-               <button className="bg-color1 w-16 h-16 flex flex-col justify-center items-center rounded-full -translate-y-5 fixed right-1/2 bottom-4 transform translate-x-1/2" onClick={() => setIsOpened(!isOpen)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" strokeWidth={3} stroke="currentColor" className="w-8 h-8 text-color3">
+               <button className="bg-color1 w-16 h-16 flex flex-col justify-center items-center rounded-full text-white fixed right-4 bottom-4 " onClick={() => setIsOpened(!isOpen)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" strokeWidth={3} stroke="#fff" className="w-8 h-8">
                          <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
                     </svg>
                </button>
 
                {isOpen && (
-                    <div className="fixed top-10 p-4 bg-white shadow-md rounded-lg w-96 left-3 right-3 md:left-1/2 md:transform md:-translate-x-1/2">
-                         <h1 className="text-center text-2xl font-bold mb-4">Create Task</h1>
+                    <div className="fixed top-28 p-4 bg-color1 shadow-md rounded-lg text-white w-5/6 left-1/2 right-3 transform -translate-x-1/2">
+                         <div className='flex justify-between items-center'>
+                              <span></span><h1 className="text-center text-2xl font-bold">Create Task</h1> <span className='border rounded-full text-red-500 border-red-500' onClick={() => setIsOpened(false)}><CgClose /></span>
+                         </div>
                          <form onSubmit={formik.handleSubmit}>
                               <div className="flex flex-col space-y-4">
-                                   <div className="flex items-center">
+                                   <div className="flex items-center sr-only">
                                         <input type="checkbox" name="completed" onChange={formik.handleChange} className="checkbox checkbox-success mr-2" />
                                         <label className="font-semibold">Mark as Completed</label>
                                    </div>
-
                                    {formik.touched.title && formik.errors.title ? (<p className="text-red-500 text-xs">{formik.errors.title}</p>) : null}
-                                   <input type="text" name="title" value={formik.values.title} onChange={formik.handleChange} placeholder="Task title" className="w-full font-extrabold text-base p-2 border bg-color3 rounded-lg" />
+                                   <input type="text" name="title" value={formik.values.title} onChange={formik.handleChange} placeholder="Task title" className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
                                    {formik.touched.description && formik.errors.description ? (<p className="text-red-500 text-xs">{formik.errors.description}</p>) : null}
-                                   <textarea name="description" value={formik.values.description} onChange={formik.handleChange} placeholder="Task description" className="w-full font-light text-sm p-2 border bg-color3 rounded-lg" />
+                                   <textarea name="description" value={formik.values.description} onChange={formik.handleChange} placeholder="Task description" className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
 
                                    <div className="flex space-x-2">
                                         {formik.touched.time && formik.errors.time ? (<p className="text-red-500 text-xs">{formik.errors.time}</p>) : null}
-                                        <input type="time" name="time" value={formik.values.time} onChange={formik.handleChange} className="w-1/2 font-bold p-2 border bg-color3 rounded-lg" />
+                                        <input type="time" name="time" value={formik.values.time} onChange={formik.handleChange} className="w-1/2 p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
                                         {formik.touched.date && formik.errors.date ? (<p className="text-red-500 text-xs">{formik.errors.date}</p>) : null}
-                                        <input type="date" name="date" value={formik.values.date} onChange={formik.handleChange} className="w-1/2 font-extralight text-xs p-2 border bg-color3 rounded-lg" />
+                                        <input type="date" name="date" value={formik.values.date} onChange={formik.handleChange} className="w-1/2 p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
                                    </div>
 
-                                   <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600"> Add Task </button>
+                                   <button type="submit" className="w-full py-2 px-4 bg-white text-color1 font-bold rounded-lg"> Add Task </button>
                               </div>
                          </form>
                     </div>

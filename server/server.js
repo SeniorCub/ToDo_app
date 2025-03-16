@@ -1,7 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import userRouter from './src/routes/user.route.js'
-import taslRouter from './src/routes/task.route.js'
+import taskRouter from './src/routes/task.route.js'
+import noteRouter from './src/routes/note.route.js'
 
 const app = express()
 
@@ -18,7 +19,8 @@ app.use(cors(corsOptions));
 
 // routes
 app.use('/api/user', userRouter)
-app.use('/api/task', taslRouter)
+app.use('/api/task', taskRouter)
+app.use('/api/note', noteRouter)
 
 const port = 3030
 app.listen(port, () => {

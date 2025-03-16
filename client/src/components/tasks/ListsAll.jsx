@@ -20,7 +20,7 @@ const ListEach = ({ tasks }) => {
      return (
           <div className="mt-2">
                {tasks.length === 0 ? (
-                    <p className="text-center text-gray-500">No tasks available.</p>
+                    <p className="text-center text-black">No tasks available.</p>
                ) : (
                     tasks.map((task) => (
                          <div
@@ -96,63 +96,9 @@ ListEach.propTypes = {
 
 const ListsAll = () => {
      const [allTasks, setAllTasks] = useState([]);
-     const [completedTasks, setCompletedTasks] = useState([]);
-     const [pendingTasks, setPendingTasks] = useState([]);
      const [loading, setLoading] = useState(true);
 
-     // Function to update task status in the backend
-     const updateTaskStatus = async (taskId) => {
-          try {
-               const requestOptions = {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ isPending: 1 }),
-               };
-               await fetch(`http://localhost:3030/api/task/pending/${taskId}`, requestOptions);
-          } catch (error) {
-               console.error("Error updating task status:", error);
-               toast.error("Failed to update task status.");
-          }
-     };
-
-     // Function to check and move expired tasks to the pending section
-     const checkForPendingTasks = () => {
-          const currentDate = new Date();
-
-          // Identify tasks that should be moved to pending
-          const newPendingTasks = allTasks.filter((task) => {
-               const taskDateTime = new Date(`${task.date}T${task.time}`);
-               return !task.completed && taskDateTime < currentDate;
-          });
-
-          if (newPendingTasks.length > 0) {
-               // Move expired tasks to pendingTasks
-               setPendingTasks((prevPendingTasks) => [
-                    ...prevPendingTasks,
-                    ...newPendingTasks.filter(
-                         (task) => !prevPendingTasks.some((pendingTask) => pendingTask.id === task.id)
-                    ),
-               ]);
-
-               // Update allTasks to exclude newly pending tasks
-               const updatedTasks = allTasks.filter(
-                    (task) => !newPendingTasks.some((pendingTask) => pendingTask.id === task.id)
-               );
-               setAllTasks(updatedTasks);
-
-               // Update each task's status in the backend
-               newPendingTasks.forEach((task) => updateTaskStatus(task.id));
-          }
-     };
-
-     useEffect(() => {
-          if (!loading) {
-               checkForPendingTasks();
-          }
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-     }, [allTasks, loading]);
-
-     const url = 'http://localhost:3030/api/task/fetch/2';
+     const url = 'http://localhost:3030/api/task/fetch/';
 
      useEffect(() => {
           const fetchTasks = async () => {
@@ -165,9 +111,7 @@ const ListsAll = () => {
                     if (response.status === 200) {
                          setLoading(false);
                          const fetchedTasks = response.data.result;
-                         setAllTasks(fetchedTasks.filter(task => task.isComplete !== 1 && task.isPending !== 1));
-                         setCompletedTasks(fetchedTasks.filter(task => task.isComplete === 1));
-                         setPendingTasks(fetchedTasks.filter(task => task.isPending === 1));
+                         setAllTasks(fetchedTasks);
                     }
                } catch (error) {
                     setLoading(false);
@@ -180,20 +124,10 @@ const ListsAll = () => {
      return (
           <>
                {loading ? (
-                    <p className="text-center text-gray-500">Loading tasks...</p>
+                    <p className="text-center text-black">Loading tasks...</p>
                ) : (
-                    <div className="w-full">
-                         {/* Active Tasks Section */}
-                         <h2 className="text-xl font-bold pt-5">Active Tasks</h2>
+                    <div className="w-full h-full my-5 p-2">
                          <ListEach tasks={allTasks} />
-                         <hr className="my-10 mx-10 bg-color1 h-1" />
-                         {/* Pending Tasks Section */}
-                         <h2 className="text-xl font-bold mt-10">Pending Tasks</h2>
-                         <ListEach tasks={pendingTasks} />
-                         <hr className="my-10 mx-10 bg-color1 h-1" />
-                         {/* Completed Tasks Section */}
-                         <h2 className="text-xl font-bold">Completed Tasks</h2>
-                         <ListEach tasks={completedTasks} />
                     </div>
                )}
           </>
@@ -201,40 +135,3 @@ const ListsAll = () => {
 };
 
 export default ListsAll;
-
-
-
-
-// const toggleCompletion = (id) => {
-//      const updatedTasks = allTasks.map((task) => {
-//           if (task.id === id) {
-//                const updatedTask = { ...task, completed: !task.completed };
-//                if (updatedTask.completed) {
-//                     setCompletedTasks([...completedTasks, updatedTask]);
-//                     localStorage.setItem('completedTasks', JSON.stringify([...completedTasks, updatedTask]));
-//                }
-//                return updatedTask;
-//           }
-//           return task;
-//      });
-
-//      const activeTasks = updatedTasks.filter((task) => !task.completed);
-//      setAllTasks(activeTasks);
-//      localStorage.setItem('tasks', JSON.stringify(activeTasks));
-// };
-
-// const toggleCompletionInPending = (id) => {
-//      const updatedPendingTasks = pendingTasks.map((task) => {
-//           if (task.id === id) {
-//                const updatedTask = { ...task, completed: !task.completed };
-//                setCompletedTasks([...completedTasks, updatedTask]);
-//                return updatedTask;
-//           }
-//           return task;
-//      });
-
-//      const remainingPendingTasks = updatedPendingTasks.filter((task) => !task.completed);
-//      setPendingTasks(remainingPendingTasks);
-//      localStorage.setItem('pendingTasks', JSON.stringify(remainingPendingTasks));
-//      localStorage.setItem('completedTasks', JSON.stringify([...completedTasks, ...updatedPendingTasks.filter(task => task.completed)]));
-// };
