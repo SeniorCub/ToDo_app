@@ -3,6 +3,7 @@ import cors from 'cors'
 import userRouter from './src/routes/user.route.js'
 import taskRouter from './src/routes/task.route.js'
 import noteRouter from './src/routes/note.route.js'
+import './src/cron.js'
 
 const app = express()
 
