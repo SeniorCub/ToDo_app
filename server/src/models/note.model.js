@@ -1,4 +1,4 @@
-import db from '../database.js'
+import db from '../config/database.js'
 
 export const addNote = async (title, contet, user_id) => {
      try {

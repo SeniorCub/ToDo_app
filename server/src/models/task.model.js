@@ -1,4 +1,4 @@
-import db from '../database.js'
+import db from '../config/database.js'
 
 export const addTask = async (title, description, time, date, user_id) => {
      try {
@@ -18,27 +18,36 @@ export const getTask = async (user_id) => {
      }
 }
 
-export const isComplete = async (task_Id) => {
+export const getaTask = async (id) => {
      try {
-          const [result] = await db.query('UPDATE task_tb SET isComplete = 1 WHERE id = ?', [task_Id])
+          const [result] = await db.query('SELECT * FROM task_tb WHERE id = ?', [id])
           return result
      } catch (error) {
           console.error(error.message);
      }
 }
 
-export const isPending = async (task_Id) => {
+export const isComplete = async (id) => {
      try {
-          const [result] = await db.query('UPDATE task_tb SET isPending = 1 WHERE id = ?', [task_Id])
+          const [result] = await db.query('UPDATE task_tb SET isComplete = 1 WHERE id = ?', [id])
           return result
      } catch (error) {
           console.error(error.message);
      }
 }
 
-export const deleteTask = async (task_Id) => {
+export const deleteTask = async (id) => {
      try {
-          const [result] = await db.query('DELETE FROM task_tb WHERE id = ?', [task_Id])
+          const [result] = await db.query('DELETE FROM task_tb WHERE id = ?', [id])
+          return result
+     } catch (error) {
+          console.error(error.message);
+     }
+}
+
+export const correctTask = async (title, description, time, date, user_id, id) => {
+     try {
+          const [result] = await db.query('UPDATE task_tb SET title = ?, description = ?, time = ?, date = ? WHERE id = ? AND user_id = ?', [title, description, time, date, id, user_id])
           return result
      } catch (error) {
           console.error(error.message);

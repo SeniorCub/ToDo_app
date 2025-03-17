@@ -3,10 +3,14 @@ import cors from 'cors'
 import userRouter from './src/routes/user.route.js'
 import taskRouter from './src/routes/task.route.js'
 import noteRouter from './src/routes/note.route.js'
+import dotenv from 'dotenv'
 import './src/cron.js'
+import cookieParser from 'cookie-parser'
 
-const app = express()
+dotenv.config();
+const app = express();
 
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
@@ -23,10 +27,5 @@ app.use('/api/user', userRouter)
 app.use('/api/task', taskRouter)
 app.use('/api/note', noteRouter)
 
-const port = 3030
-app.listen(port, () => {
-     console.log(`
-          Server is running.
-          http://localhost:${port}
-     `)
-})
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port http://localhost/${PORT}`));

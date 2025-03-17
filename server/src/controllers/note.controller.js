@@ -1,4 +1,4 @@
-import { addFav, addNote, correctNote, getallNotes, getNote, removeNote } from "../model/note.model.js";
+import { addFav, addNote, correctNote, getallNotes, getNote, removeNote } from "../models/note.model.js";
 
 export const createNote = async (req, res) => {
      const { title, contet, user_id } = req.body;
@@ -14,7 +14,7 @@ export const createNote = async (req, res) => {
                res.status(200).json({
                     message: 'note created successfully',
                     data: {
-                         note_Id: result.insertId,
+                         Id: result.insertId,
                          user_id: user_id
                     }
                })
@@ -42,7 +42,7 @@ export const editNote = async (req, res) => {
                res.status(200).json({
                     message: 'note created successfully',
                     data: {
-                         note_Id: id,
+                         Id: id,
                          user_id: user_id
                     }
                })
@@ -96,7 +96,7 @@ export const deleteNote = async (req, res) => {
           } else {
                res.status(200).json({
                     message: 'note deleted successfully',
-                    note_id: id
+                    id: id
                })
           }
      } catch (error) {
@@ -116,7 +116,7 @@ export const favNote = async (req, res) => {
           } else {
                res.status(200).json({
                     message: 'note added to favourite successfully',
-                    note_id: id
+                    id: id
                })
           }
      } catch (error) {
