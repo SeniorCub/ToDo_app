@@ -2,8 +2,8 @@ import { addUser, getAUser, getUserId, removeUser } from "../models/user.model.j
 import { generateToken } from "../utils/token.utils.js";
 
 export const register = async (req, res) => {
-     const { fullname, email } = req.body;
-     if (!fullname || !email) {
+     const { fullname, email, photoUrl } = req.body;
+     if (!fullname || !email || !photoUrl) {
           return res.status(404).json({ message: "Please provide all details" });
      }
 
@@ -13,7 +13,7 @@ export const register = async (req, res) => {
                return res.status(409).json({ message: "User already existed." });
           }
 
-          const result = await addUser(fullname, email);
+          const result = await addUser(fullname, email, photoUrl);
           if (result.affectedRows === 0) {
                return res.status(402).json({ message: "User not created." });
           } else {
@@ -25,6 +25,23 @@ export const register = async (req, res) => {
           console.log(erroror);
      }
 };
+
+export const checkUser = async (req, res) => {
+     const { email } = req.query;
+     if (!email) {
+          return res.status(400).json({ message: "Email is required." });
+     }
+
+     try {
+          const user = await getAUser(email);
+          return res.status(200).json({ exists: user.length > 0 });
+     } catch (error) {
+          console.error(error);
+          return res.status(500).json({ message: "Internal Server Error" });
+     }
+};
+
+
 
 export const login = async (req, res, next) => {
      const { email } = req.body;

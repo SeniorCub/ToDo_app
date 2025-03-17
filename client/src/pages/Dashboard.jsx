@@ -12,10 +12,10 @@ const Dashboard = () => {
                               <p className="font-normal text-lg">Dear Dorcas</p>
                          </div>
                     </div>
-                    <div className="omo flex flex-col p-10 space-y-10">
-                         <Link to={"/notes"} className="bg-color1 text-white w-full p-6 rounded-3xl text-xl flex justify-between items-center">My Notes <MdOutlineNoteAlt /> </Link>
-                         <Link to={"/tasks"} className="bg-color1 text-white w-full p-6 rounded-3xl text-xl flex justify-between items-center">My Tasks <FaTasks /> </Link>
-                         <Link to={"/calender"} className="bg-color1 text-white w-full p-6 rounded-3xl text-xl flex justify-between items-center">My Calender <BiCalendar /> </Link>
+                    <div className="omo flex flex-col p-10 space-y-10 ">
+                         <Link to={"/notes"} className="bg-color1 md:mt-10 text-white w-full md:w-1/2 p-6 rounded-3xl text-xl flex justify-between items-center">My Notes <MdOutlineNoteAlt /> </Link>
+                         <Link to={"/tasks"} className="bg-color1 text-white w-full md:w-1/2 p-6 rounded-3xl text-xl flex justify-between items-center">My Tasks <FaTasks /> </Link>
+                         <Link to={"/calender"} className="bg-color1 text-white w-full md:w-1/2 p-6 rounded-3xl text-xl flex justify-between items-center">My Calender <BiCalendar /> </Link>
                     </div>
                </div>
      )

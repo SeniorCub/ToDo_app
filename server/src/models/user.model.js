@@ -1,8 +1,8 @@
 import db from '../config/database.js'
 
-export const addUser = async (fullname, email) => {
+export const addUser = async (fullname, email, photoUrl) => {
      try {
-          const [result] = await db.query('INSERT INTO user_tb (fullname,email) VALUES (?,?)', [fullname, email])
+          const [result] = await db.query('INSERT INTO user_tb (fullname,email,photoUrl) VALUES (?,?,?)', [fullname, email, photoUrl])
           return result
      } catch (error) {
           console.error(error.message);
@@ -37,3 +37,4 @@ export const removeUser = async (id) => {
           console.error(error.message);
      }
 }
+
