@@ -9,13 +9,16 @@ import MainLayout from './layout/MainLayout'
 import NoteView from './pages/notes/NoteView'
 import CalenderView from './pages/tasks/CalenderView'
 import Register from './pages/Register'
+import { Toaster } from 'react-hot-toast';
 
 function App() {
     return (
         <>
+            <Toaster position="top-center" />
+
             <Routes>
                 <Route path='/' element={<Splash />} />
-                <Route path='/register' element={<Register />} />
+                <Route path='/sign' element={<Register />} />
 
                 {/* Protected Routes */}
                 <Route

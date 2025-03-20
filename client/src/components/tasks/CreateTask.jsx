@@ -6,6 +6,8 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { CgClose } from 'react-icons/cg';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const validationSchema = Yup.object().shape({
      title: Yup.string().required('Title is required'),
      description: Yup.string().required('please enter a Description'),
@@ -28,10 +30,11 @@ const CreateTask = () => {
           },
           validationSchema,
           onSubmit: async (values, { resetForm }) => {
-               const url = 'http://localhost:3030/api/task/create';
-
+               const url = `${API_URL}/task/create`;
+               const id = localStorage.getItem('id');
+               const token = localStorage.getItem('token');
                const data = {
-                    user_Id: 2,
+                    user_id: id,
                     title: values.title,
                     description: values.description,
                     date: values.date,
@@ -42,12 +45,14 @@ const CreateTask = () => {
                     const response = await axios.post(url, data, {
                          headers: {
                               'Content-Type': 'application/json',
+                              Authorization: `Bearer ${token}`,
                          }
                     });
                     if (response.status === 200) {
                          toast.success(response.data.message);
                          resetForm();
                          setIsOpened(false);
+                         window.location.reload();
                     }
                } catch (error) {
                     toast.error(error.message);
