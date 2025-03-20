@@ -14,11 +14,26 @@ export const register = async (req, res) => {
           }
 
           const result = await addUser(fullname, email, photoUrl);
+          const userCreated = await getAUser(email)
+          if (userCreated.length === 0) {
+               return res.json({ message: "Email not registered. Please register with us." });
+          }
+
+          const token = generateToken(userCreated.id);
+
+          res.cookie("token", token, {
+               httpOnly: true,
+               secure: process.env.NODE_ENV === "production",
+               sameSite: "strict",
+               maxAge: 3600000,
+          });
           if (result.affectedRows === 0) {
                return res.status(402).json({ message: "User not created." });
           } else {
                return res.status(200).json({
-                    message: "User created successfully."
+                    message: "User created successfully.",
+                    token: token,
+                    data: userCreated[0]
                });
           }
      } catch (erroror) {
