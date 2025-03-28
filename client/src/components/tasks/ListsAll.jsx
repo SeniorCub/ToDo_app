@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { ListEach } from './ListEach';
+import { logout } from '../../hooks/logout';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -28,10 +29,15 @@ const ListsAll = () => {
                          const fetchedTasks = response.data.data;
                          console.log(fetchedTasks);
                          setAllTasks(fetchedTasks);
+                    } else {
+                         setLoading(false);                    
+                         toast.error(response.data.message);
+                         logout();
                     }
                } catch (error) {
-                    setLoading(false);
+                    setLoading(false);                    
                     toast.error(error.message);
+                    logout();
                }
           };
           fetchTasks();

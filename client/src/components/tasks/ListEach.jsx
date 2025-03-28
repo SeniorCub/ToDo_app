@@ -1,69 +1,111 @@
 import PropTypes from 'prop-types';
 import { toast } from 'react-hot-toast';
-import { MdRemoveCircleOutline } from 'react-icons/md';
+import { BiEdit, BiTrash } from 'react-icons/bi';
+import { BsCheckCircle } from 'react-icons/bs';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const ListEach = ({ tasks }) => {
      const deleteTask = async (taskId) => {
           try {
+               const token = localStorage.getItem('token');
+
                const requestOptions = {
                     method: "DELETE",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                         'Content-Type': 'application/json',
+                         Authorization: `Bearer ${token}`,
+                    },
                };
-               await fetch(`${API_URL}/task/delete/${taskId}`, requestOptions);
+               let response = await fetch(`${API_URL}/task/delete/${taskId}`, requestOptions);
+               if (response.status === 200) {
+                    toast.success("Task deleted successfully.");
+                    window.location.reload();
+               } else {
+                    toast.error("Failed to delete task.");
+               }
           } catch (error) {
                console.error("Error deleting task:", error);
                toast.error("Failed to delete task.");
           }
      };
 
+     const completeTask = async (taskId) => {
+          try {
+               const token = localStorage.getItem('token');
+
+               const requestOptions = {
+                    method: "PUT",
+                    headers: {
+                         'Content-Type': 'application/json',
+                         Authorization: `Bearer ${token}`,
+                    },
+               };
+               let response = await fetch(`${API_URL}/task/complete/${taskId}`, requestOptions);
+               if (response.status === 200) {
+                    toast.success("Task completed successfully.");
+                    window.location.reload();
+               } else {
+                    toast.error("Failed to complete task.");
+               }
+          } catch (error) {
+               console.error("Error completing task:", error);
+               toast.error("Failed to complete task.");
+          }
+     }
+
      return (
           <div className="mt-2">
                {tasks.length === 0 ? (
-                    <p className="text-center text-black">No tasks available.</p>
+                    <p className="text-center text-gray-500">No tasks available.</p>
                ) : (
                     tasks.map((task) => (
                          <div
                               key={task.id}
-                              className={`flex w-full items-center py-2 mb-2 rounded-lg max-h-36 ${task.isComplete === 1
-                                   ? 'opacity-15'
-                                   : task.isPending === 1
-                                        ? 'opacity-50 cursor-not-allowed'
-                                        : ''
-                                   }`}
+                              className="bg-white shadow-md rounded-lg p-4 mb-4 relative"
                          >
-                              {/* Checkbox Section */}
-                              <div className="p-3 flex justify-center items-center">
-                                   <input
-                                        type="checkbox"
-                                        checked={task.completed}
-                                        className="checkbox checkbox-success"
-                                   />
+                              <div className="flex justify-between items-center mb-2">
+                                   <div className="flex items-center">
+                                        <BsCheckCircle
+                                             className={`mr-2 ${task.isComplete === 1
+                                                       ? 'text-green-500'
+                                                       : 'text-gray-300'
+                                                  }`}
+                                        />
+                                        <span className="text-sm text-gray-500">
+                                             {task.time.split(":")[0] + ":" + task.time.split(":")[1]}
+                                             {", " + task.date.split("T")[0]}
+                                        </span>
+                                   </div>
+                                   <div className="flex space-x-2">
+                                        <button
+                                             className="text-blue-500 hover:bg-blue-100 p-1 rounded-full"
+                                             onClick={() => {/* Edit functionality */ }}
+                                        >
+                                             <BiEdit size={20} />
+                                        </button>
+                                        <button
+                                             className="text-red-500 hover:bg-red-100 p-1 rounded-full"
+                                             onClick={() => deleteTask(task.id)}
+                                        >
+                                             <BiTrash size={20} />
+                                        </button>
+                                   </div>
                               </div>
-                              {/* Task Details */}
-                              <div className="text-black basis-4/6">
-                                   <h2 className="font-extrabold text-base">{task.title}</h2>
-                                   <p className="font-light text-sm md:block hidden">
-                                        {task.description.substring(0, 100)}...
+
+                              <div
+                                   className={`
+                                        ${task.isComplete === 1
+                                             ? 'line-through text-gray-500'
+                                             : 'text-gray-800'
+                                        }`
+                                   }
+                              >
+                                   <h2 className="font-bold text-lg mb-1">{task.title}</h2>
+                                   <p className="text-sm">
+                                        {task.description.substring(0, 200)}
+                                        {task.description.length > 200 ? '...' : ''}
                                    </p>
-                                   <p className="font-light text-sm block md:hidden">
-                                        {task.description.substring(0, 50)}...
-                                   </p>
-                              </div>
-                              {/* Time and Date */}
-                              <div className="basis-2/6 text-sm text-right">
-                                   <p className="font-bold max-h-10 overflow-y-hidden">{task.time.split(":")[0] + ":" + task.time.split(":")[1]}</p>
-                                   <p className="font-extralight text-xs max-h-16 overflow-y-hidden">{task.date.split("T")[0]}</p>
-                              </div>
-                              {/* Delete Button */}
-                              <div className="p-3 text-xs flex justify-center items-center">
-                                   <button
-                                        className="text-red-500 hover:text-red-700"
-                                        onClick={() => deleteTask(task.id)}
-                                   >
-                                        <MdRemoveCircleOutline className='text-lg' />
-                                   </button>
                               </div>
                          </div>
                     ))
@@ -86,3 +128,5 @@ ListEach.propTypes = {
           })
      ).isRequired,
 };
+
+export default ListEach;

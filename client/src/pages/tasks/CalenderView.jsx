@@ -1,12 +1,25 @@
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-const CalenderView = () => {
+// Localizer for calendar
+const localizer = momentLocalizer(moment);
+
+const CalendarView = () => {
+     // State for tasks and diary notes
+
      return (
-     <>
-          <div className='bg-color3 p-14 flex justify-center items-center '>
-               <h1 className='text-4xl text-color1'>This feature is Coming soon</h1> 
-          </div>
-     </>
-     )
-}
+          <>
+               {/* Calendar Component */}
+               <Calendar
+                    localizer={localizer}
+                    startAccessor="date"
+                    endAccessor="date"
+                    selectable
+                    className='h-[80vh] md:w-9/12 mx-auto'
+               />
+          </>
+     );
+};
 
-export default CalenderView
+export default CalendarView;

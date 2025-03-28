@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaTasks } from "react-icons/fa";
 import { MdOutlineNoteAlt } from "react-icons/md";
-import { BiCalendar } from "react-icons/bi";
+import { BiBookmarkHeart, BiCalendar } from "react-icons/bi";
 import axios from "axios";
+import { logout } from "../hooks/logout";
 
 const apiURL = import.meta.env.VITE_API_URL;
 
@@ -21,6 +22,7 @@ const Dashboard = () => {
                if (!token) {
                     console.error("No authentication token found!");
                     setIsLoadingUser(false);
+                    logout();
                     return;
                }
 
@@ -38,13 +40,12 @@ const Dashboard = () => {
                     let user = response.data.data;
                     if (!user) {
                          console.error("User data not found!");
-                         <Navigate to="/sign" replace />;
-
-                         return;
+                         logout();
                     }
                     setUser(user);
                } catch (error) {
                     console.error("Error fetching user data:", error);
+                    logout();
                } finally {
                     setIsLoadingUser(false);
                }
@@ -93,6 +94,9 @@ const Dashboard = () => {
                     </Link>
                     <Link to="/tasks" className="bg-color1 text-white w-full md:w-1/2 p-6 rounded-3xl text-xl flex justify-between items-center">
                          My Tasks <FaTasks />
+                    </Link>
+                    <Link to="/diary" className="bg-color1 text-white w-full md:w-1/2 p-6 rounded-3xl text-xl flex justify-between items-center">
+                         My Diary <BiBookmarkHeart />
                     </Link>
                     <Link to="/calendar" className="bg-color1 text-white w-full md:w-1/2 p-6 rounded-3xl text-xl flex justify-between items-center">
                          My Calendar <BiCalendar />

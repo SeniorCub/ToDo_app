@@ -10,6 +10,7 @@ import NoteView from './pages/notes/NoteView'
 import CalenderView from './pages/tasks/CalenderView'
 import Register from './pages/Register'
 import { Toaster } from 'react-hot-toast';
+import AllDiary from './pages/diary/AllDiary'
 
 function App() {
     return (
@@ -46,7 +47,15 @@ function App() {
                     }
                 />
                 <Route
-                    path="/calender"
+                    path="/diary"
+                    element={
+                        <ProtectedRoute>
+                            <MainLayout child={<AllDiary />} />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/calendar"
                     element={
                         <ProtectedRoute>
                             <MainLayout child={<CalenderView />} />

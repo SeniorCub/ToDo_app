@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
+import { logout } from "../../hooks/logout";
 const apiURL = import.meta.env.VITE_API_URL;
 
 
@@ -33,12 +33,12 @@ const SmallNavbar = ({ tab }) => {
                     let user = response.data.data;
                     if (!user) {
                          console.error("User data not found!");
-                         <Navigate to="/sign" replace />;
-                         return;
+                         logout();
                     }
                     setUser(user);
                } catch (error) {
                     console.error("Error fetching user data:", error);
+                    logout();
                }
           };
 
@@ -47,7 +47,7 @@ const SmallNavbar = ({ tab }) => {
 
      return (
           <div className="flex justify-between items-center p-5 mt-[5vh]">
-               <div className="text-color1 font-bold text-2xl capitalize">{tab}</div>
+               <div className="text-color1 font-bold text-2xl capitalize">My {tab}</div>
                <div className="avatar">
                     <div className="w-12 rounded-full">
                          <img
