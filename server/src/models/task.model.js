@@ -11,7 +11,7 @@ export const addTask = async (title, description, time, date, user_id) => {
 
 export const getTask = async (user_id) => {
      try {
-          const [result] = await db.query('SELECT * FROM task_tb WHERE user_id = ? ORDER BY date ASC', [user_id])
+          const [result] = await db.query('SELECT * FROM task_tb WHERE user_id = ? ORDER BY date DESC', [user_id])
           return result
      } catch (error) {
           console.error(error.message);

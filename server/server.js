@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import './src/cron.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import os from 'os'; // Import the os module
 
 dotenv.config(); // Load environment variables
 
@@ -21,6 +22,7 @@ app.use(express.json());
 
 const corsOptions = {
      origin: 'http://localhost:5173',
+     // origin: 'http://192.168.0.148:5173', // Fixed typo: removed the 'I' after IP
      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
      allowedHeaders: ['Content-Type', 'Authorization'],
      credentials: true,
@@ -43,5 +45,24 @@ app.get('*', (req, res) => {
      res.sendFile(path.join(__dirname, 'src', 'view', 'error.html'));
 });
 
-const PORT = process.env.PORT || 9000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+const PORT = process.env.PORT || 9055; // Changed to match your network service port
+
+// Function to get network IP
+function getNetworkIp() {
+     const interfaces = os.networkInterfaces();
+     for (const name of Object.keys(interfaces)) {
+          for (const iface of interfaces[name]) {
+               // Skip over non-IPv4 and internal (loopback) addresses
+               if (iface.family === 'IPv4' && !iface.internal) {
+                    return iface.address;
+               }
+          }
+     }
+     return '0.0.0.0'; // Default fallback
+}
+
+app.listen(PORT, '0.0.0.0', () => {
+     const networkIp = getNetworkIp();
+     console.log(`Server running on http://localhost:${PORT}`);
+     console.log(`Network: http://${networkIp}:${PORT}`);
+});

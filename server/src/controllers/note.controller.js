@@ -1,12 +1,12 @@
 import { addFav, addNote, correctNote, getallNotes, getNote, removeNote } from "../models/note.model.js";
 
 export const createNote = async (req, res) => {
-     const { title, contet, user_id } = req.body;
-     if (!title || !contet || !user_id) {
+     const { title, contet, category, user_id } = req.body;
+     if (!title || !contet || !category || !user_id) {
           return res.status(402).json({ message: 'please provide all details' })
      }
      try {
-          const result = await addNote(title, contet, user_id);
+          const result = await addNote(title, contet, category, user_id);
 
           if (result.affectedRows === 0) {
                return res.status(402).json({ message: 'note not created' })
@@ -25,8 +25,8 @@ export const createNote = async (req, res) => {
 }
 
 export const editNote = async (req, res) => {
-     const { title, contet, user_id } = req.body;
-     if (!title || !contet || !user_id) {
+     const { title, contet, category,  user_id } = req.body;
+     if (!title || !contet || !category || !user_id) {
           return res.status(402).json({ message: 'please provide all details' })
      }
      const { id } = req.params
@@ -34,7 +34,7 @@ export const editNote = async (req, res) => {
           return res.status(402).json({ message: 'please provide user id' })
      }
      try {
-          const result = await correctNote(title, contet, user_id, id);
+          const result = await correctNote(title, contet, category, user_id, id);
           console.log(result)
           if (result.affectedRows === 0) {
                return res.status(402).json({ message: 'Provide valid id' })

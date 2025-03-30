@@ -15,7 +15,7 @@ const NotesAll = () => {
      const id = localStorage.getItem('id');
      const token = localStorage.getItem('token');
 
-     const url = `${API_URL}/notes/all/${id}`;
+     const url = `${API_URL}/note/allnotes/${id}`;
 
      useEffect(() => {
           const fetchNotes = async () => {
@@ -85,10 +85,13 @@ const NotesAll = () => {
                          Loading notes...
                     </div>
                ) : (
-                    <NoteEach
-                         notes={filteredNotes}
-                         onUpdateNotes={handleUpdateNotes}
-                    />
+                    <>
+                         <NoteEach
+                              notes={filteredNotes}
+                              onUpdateNotes={handleUpdateNotes}
+                         />
+
+                    </>
                )}
           </>
      );

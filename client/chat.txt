@@ -1,275 +1,5 @@
-just like others create the componets to create, each, all notes just like ```
-// eslint-disable-next-line no-unused-vars
-import React, { useState, useEffect } from 'react';
-import CreateTask from '../../components/tasks/CreateTask';
-import AllTasks from '../../components/tasks/AllTasks';
-
-const ListView = () => {
-
-     return (
-          <>
-               
-               
-          
-     );
-};
-
-export default ListView;
-
-```, ```
-import { BsStar } from "react-icons/bs"
-import ListsAll from "./ListsAll"
-
-
-const AllTasks = () => {
-     
-     return (
-          
-
-
-               
-
-
-                    
-
-
-                    
-
-All
-
-
-                    
-
-Active
-
-
-                    
-
-Pending
-
-
-                    
-
-Completed
-
-
-               
-
-
-               
-          
-
-
-     )
-}
-
-export default AllTasks
-
-```,```
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-import { ListEach } from './ListEach';
-import { logout } from '../../hooks/logout';
-
-const API_URL = import.meta.env.VITE_API_URL;
-
-const ListsAll = () => {
-     const [allTasks, setAllTasks] = useState([]);
-     const [loading, setLoading] = useState(true);
-
-     const id = localStorage.getItem('id');
-     const token = localStorage.getItem('token');
-
-     const url = `${API_URL}/task/alltasks/${id}`;
-
-     useEffect(() => {
-          const fetchTasks = async () => {
-               try {
-                    const response = await axios.get(url, {
-                         headers: {
-                              'Content-Type': 'application/json',
-                              Authorization: `Bearer ${token}`,
-                         },
-                    });
-                    if (response.status === 200) {
-                         setLoading(false);
-                         const fetchedTasks = response.data.data;
-                         console.log(fetchedTasks);
-                         setAllTasks(fetchedTasks);
-                    } else {
-                         setLoading(false);                    
-                         toast.error(response.data.message);
-                         logout();
-                    }
-               } catch (error) {
-                    setLoading(false);                    
-                    toast.error(error.message);
-                    logout();
-               }
-          };
-          fetchTasks();
-     }, [token, url, id]);
-
-     return (
-          <>
-               {loading ? (
-                    
-
-Loading tasks...
-
-
-               ) : (
-                    
-
-
-                         
-                    
-
-
-               )}
-          
-     );
-};
-
-export default ListsAll;
-
-```,```
-import PropTypes from 'prop-types';
-import { toast } from 'react-hot-toast';
-import { BiEdit, BiTrash } from 'react-icons/bi';
-import { BsCheckCircle } from 'react-icons/bs';
-
-const API_URL = import.meta.env.VITE_API_URL;
-
-export const ListEach = ({ tasks }) => {
-     const deleteTask = async (taskId) => {
-          try {
-               const token = localStorage.getItem('token');
-
-               const requestOptions = {
-                    method: "DELETE",
-                    headers: {
-                         'Content-Type': 'application/json',
-                         Authorization: `Bearer ${token}`,
-                    },
-               };
-               let response = await fetch(`${API_URL}/task/delete/${taskId}`, requestOptions);
-               if (response.status === 200) {
-                    toast.success("Task deleted successfully.");
-                    window.location.reload();
-               } else {
-                    toast.error("Failed to delete task.");
-               }
-          } catch (error) {
-               console.error("Error deleting task:", error);
-               toast.error("Failed to delete task.");
-          }
-     };
-
-     const completeTask = async (taskId) => {
-          try {
-               const token = localStorage.getItem('token');
-
-               const requestOptions = {
-                    method: "PUT",
-                    headers: {
-                         'Content-Type': 'application/json',
-                         Authorization: `Bearer ${token}`,
-                    },
-               };
-               let response = await fetch(`${API_URL}/task/complete/${taskId}`, requestOptions);
-               if (response.status === 200) {
-                    toast.success("Task completed successfully.");
-                    window.location.reload();
-               } else {
-                    toast.error("Failed to complete task.");
-               }
-          } catch (error) {
-               console.error("Error completing task:", error);
-               toast.error("Failed to complete task.");
-          }
-     }
-
-     return (
-          <div className="mt-2">
-               {tasks.length === 0 ? (
-                    <p className="text-center text-gray-500">No tasks available.</p>
-               ) : (
-                    tasks.map((task) => (
-                         <div
-                              key={task.id}
-                              className="bg-white shadow-md rounded-lg p-4 mb-4 relative"
-                         >
-                              <div className="flex justify-between items-center mb-2">
-                                   <div className="flex items-center">
-                                        <BsCheckCircle
-                                             className={`mr-2 ${task.isComplete === 1
-                                                       ? 'text-green-500'
-                                                       : 'text-gray-300'
-                                                  }`}
-                                        />
-                                        <span className="text-sm text-gray-500">
-                                             {task.time.split(":")[0] + ":" + task.time.split(":")[1]}
-                                             {", " + task.date.split("T")[0]}
-                                        </span>
-                                   </div>
-                                   <div className="flex space-x-2">
-                                        <button
-                                             className="text-blue-500 hover:bg-blue-100 p-1 rounded-full"
-                                             onClick={() => {/* Edit functionality */ }}
-                                        >
-                                             <BiEdit size={20} />
-                                        </button>
-                                        <button
-                                             className="text-red-500 hover:bg-red-100 p-1 rounded-full"
-                                             onClick={() => deleteTask(task.id)}
-                                        >
-                                             <BiTrash size={20} />
-                                        </button>
-                                   </div>
-                              </div>
-
-                              <div
-                                   className={`
-                                        ${task.isComplete === 1
-                                             ? 'line-through text-gray-500'
-                                             : 'text-gray-800'
-                                        }`
-                                   }
-                              >
-                                   <h2 className="font-bold text-lg mb-1">{task.title}</h2>
-                                   <p className="text-sm">
-                                        {task.description.substring(0, 200)}
-                                        {task.description.length > 200 ? '...' : ''}
-                                   </p>
-                              </div>
-                         </div>
-                    ))
-               )}
-          </div>
-     );
-};
-
-ListEach.propTypes = {
-     tasks: PropTypes.arrayOf(
-          PropTypes.shape({
-               id: PropTypes.number.isRequired,
-               title: PropTypes.string.isRequired,
-               description: PropTypes.string,
-               time: PropTypes.string,
-               date: PropTypes.string,
-               isComplete: PropTypes.number,
-               isPending: PropTypes.number,
-               completed: PropTypes.bool,
-          })
-     ).isRequired,
-};
-
-export default ListEach;
-```,```
-// eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
+from ```
+import { useState } from 'react';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import axios from 'axios';
@@ -280,35 +10,29 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const validationSchema = Yup.object().shape({
      title: Yup.string().required('Title is required'),
-     description: Yup.string().required('please enter a Description'),
-     date: Yup.date().required('PLease select a due date'),
-     time: Yup.string().required('please select a Time'),
-     completed: false,
+     content: Yup.string().required('Note content is required'),
+     category: Yup.string().optional(),
 });
 
-const CreateTask = () => {
-
+const CreateNote = (notes, isOpen) => {
      const [isOpen, setIsOpened] = useState(false);
 
      const formik = useFormik({
           initialValues: {
                title: '',
-               description: '',
-               date: '',
-               time: '',
-               completed: false,
+               content: '',
+               category: 'general',
           },
           validationSchema,
           onSubmit: async (values, { resetForm }) => {
-               const url = `${API_URL}/task/create`;
+               const url = `${API_URL}/note/create`;
                const id = localStorage.getItem('id');
                const token = localStorage.getItem('token');
                const data = {
                     user_id: id,
                     title: values.title,
-                    description: values.description,
-                    date: values.date,
-                    time: values.time,
+                    contet: values.content,
+                    category: values.category,
                };
 
                try {
@@ -318,50 +42,175 @@ const CreateTask = () => {
                               Authorization: `Bearer ${token}`,
                          }
                     });
+
                     if (response.status === 200) {
+                         console.log(data);
                          toast.success(response.data.message);
                          resetForm();
                          setIsOpened(false);
                          window.location.reload();
                     }
                } catch (error) {
-                    toast.error(error.message);
+                    console.log(data);
+                    console.error('Error creating note:', error);
+                    toast.error(error.response?.data?.message || 'Failed to create note');
                }
           }
      });
 
+
+     // Added null checks and default empty array
+     if (notes) {
+          // add initial values to the formik
+          formik.setValues({
+               title: notes.title,
+               content: notes.content,
+               category: notes.category,
+          });
+          return (
+               <>
+                    <button
+                         className="bg-color1 w-16 h-16 flex flex-col justify-center items-center rounded-full text-white fixed right-4 bottom-4 border-none"
+                         onClick={() => setIsOpened(!isOpen)}
+                    >
+                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" strokeWidth={3} stroke="#fff" className="w-8 h-8">
+                              <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
+                         </svg>
+                    </button>
+
+                    {isOpen && (
+                         <div className="fixed top-28 p-4 bg-white shadow-md rounded-lg w-5/6 left-1/2 transform -translate-x-1/2 border border-color1 z-50">
+                              <div className='flex justify-between items-center mb-4'>
+                                   <span></span>
+                                   <h1 className="text-center text-2xl text-color1 font-bold">Create Note</h1>
+                                   <span
+                                        className='cursor-pointer text-red-500'
+                                        onClick={() => setIsOpened(false)}
+                                   >
+                                        <CgClose size={24} />
+                                   </span>
+                              </div>
+
+                              <form onSubmit={formik.handleSubmit}>
+                                   <div className="flex flex-col space-y-4">
+                                        {formik.touched.title && formik.errors.title ? (
+                                             <p className="text-red-500 text-xs">{formik.errors.title}</p>
+                                        ) : null}
+                                        <input
+                                             type="text"
+                                             name="title"
+                                             value={formik.values.title}
+                                             onChange={formik.handleChange}
+                                             placeholder="Note title"
+                                             className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg"
+                                        />
+
+                                        {formik.touched.content && formik.errors.content ? (
+                                             <p className="text-red-500 text-xs">{formik.errors.content}</p>
+                                        ) : null}
+                                        <textarea
+                                             name="content"
+                                             value={formik.values.content}
+                                             onChange={formik.handleChange}
+                                             placeholder="Note content"
+                                             rows={5}
+                                             className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg  max-h-72"
+                                        />
+
+                                        <select
+                                             name="category"
+                                             value={formik.values.category}
+                                             onChange={formik.handleChange}
+                                             className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg"
+                                        >
+                                             <option value="general">General</option>
+                                             <option value="personal">Personal</option>
+                                             <option value="work">Work</option>
+                                             <option value="ideas">Ideas</option>
+                                        </select>
+
+                                        <button
+                                             type="submit"
+                                             className="w-full py-2 px-4 bg-color1 text-white font-bold rounded-lg"
+                                        >
+                                             Create Note
+                                        </button>
+                                   </div>
+                              </form>
+                         </div>
+                    )}
+               </>
+          );
+     }
+
      return (
           <>
-               <button className="bg-color1 w-16 h-16 flex flex-col justify-center items-center rounded-full text-white fixed right-4 bottom-4 " onClick={() => setIsOpened(!isOpen)}>
+               <button
+                    className="bg-color1 w-16 h-16 flex flex-col justify-center items-center rounded-full text-white fixed right-4 bottom-4 border-none"
+                    onClick={() => setIsOpened(!isOpen)}
+               >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" strokeWidth={3} stroke="#fff" className="w-8 h-8">
                          <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
                     </svg>
                </button>
 
                {isOpen && (
-                    <div className="fixed top-28 p-4 bg-color1 shadow-md rounded-lg text-white w-5/6 left-1/2 right-3 transform -translate-x-1/2">
-                         <div className='flex justify-between items-center'>
-                              <span></span><h1 className="text-center text-2xl font-bold">Create Task</h1> <span className='border rounded-full text-red-500 border-red-500' onClick={() => setIsOpened(false)}><CgClose /></span>
+                    <div className="fixed top-28 p-4 bg-white shadow-md rounded-lg w-5/6 left-1/2 transform -translate-x-1/2 border border-color1 z-50">
+                         <div className='flex justify-between items-center mb-4'>
+                              <span></span>
+                              <h1 className="text-center text-2xl text-color1 font-bold">Create Note</h1>
+                              <span
+                                   className='cursor-pointer text-red-500'
+                                   onClick={() => setIsOpened(false)}
+                              >
+                                   <CgClose size={24} />
+                              </span>
                          </div>
+
                          <form onSubmit={formik.handleSubmit}>
                               <div className="flex flex-col space-y-4">
-                                   <div className="flex items-center sr-only">
-                                        <input type="checkbox" name="completed" onChange={formik.handleChange} className="checkbox checkbox-success mr-2" />
-                                        <label className="font-semibold">Mark as Completed</label>
-                                   </div>
-                                   {formik.touched.title && formik.errors.title ? (<p className="text-red-500 text-xs">{formik.errors.title}</p>) : null}
-                                   <input type="text" name="title" value={formik.values.title} onChange={formik.handleChange} placeholder="Task title" className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
-                                   {formik.touched.description && formik.errors.description ? (<p className="text-red-500 text-xs">{formik.errors.description}</p>) : null}
-                                   <textarea name="description" value={formik.values.description} onChange={formik.handleChange} placeholder="Task description" className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
+                                   {formik.touched.title && formik.errors.title ? (
+                                        <p className="text-red-500 text-xs">{formik.errors.title}</p>
+                                   ) : null}
+                                   <input
+                                        type="text"
+                                        name="title"
+                                        value={formik.values.title}
+                                        onChange={formik.handleChange}
+                                        placeholder="Note title"
+                                        className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg"
+                                   />
 
-                                   <div className="flex space-x-2">
-                                        {formik.touched.time && formik.errors.time ? (<p className="text-red-500 text-xs">{formik.errors.time}</p>) : null}
-                                        <input type="time" name="time" value={formik.values.time} onChange={formik.handleChange} className="w-1/2 p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
-                                        {formik.touched.date && formik.errors.date ? (<p className="text-red-500 text-xs">{formik.errors.date}</p>) : null}
-                                        <input type="date" name="date" value={formik.values.date} onChange={formik.handleChange} className="w-1/2 p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
-                                   </div>
+                                   {formik.touched.content && formik.errors.content ? (
+                                        <p className="text-red-500 text-xs">{formik.errors.content}</p>
+                                   ) : null}
+                                   <textarea
+                                        name="content"
+                                        value={formik.values.content}
+                                        onChange={formik.handleChange}
+                                        placeholder="Note content"
+                                        rows={5}
+                                        className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg  max-h-72"
+                                   />
 
-                                   <button type="submit" className="w-full py-2 px-4 bg-white text-color1 font-bold rounded-lg"> Add Task </button>
+                                   <select
+                                        name="category"
+                                        value={formik.values.category}
+                                        onChange={formik.handleChange}
+                                        className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg"
+                                   >
+                                        <option value="general">General</option>
+                                        <option value="personal">Personal</option>
+                                        <option value="work">Work</option>
+                                        <option value="ideas">Ideas</option>
+                                   </select>
+
+                                   <button
+                                        type="submit"
+                                        className="w-full py-2 px-4 bg-color1 text-white font-bold rounded-lg"
+                                   >
+                                        Create Note
+                                   </button>
                               </div>
                          </form>
                     </div>
@@ -370,5 +219,335 @@ const CreateTask = () => {
      );
 };
 
-export default CreateTask;
-```
+export default CreateNote;
+```,```
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { logout } from '../../hooks/logout';
+import NoteEach from './NoteEach';
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+const NotesAll = () => {
+     const [allNotes, setAllNotes] = useState([]);
+     const [filteredNotes, setFilteredNotes] = useState([]);
+     const [loading, setLoading] = useState(true);
+     const [activeFilter, setActiveFilter] = useState('all');
+
+     const id = localStorage.getItem('id');
+     const token = localStorage.getItem('token');
+
+     const url = `${API_URL}/note/allnotes/${id}`;
+
+     useEffect(() => {
+          const fetchNotes = async () => {
+               try {
+                    const response = await axios.get(url, {
+                         headers: {
+                              'Content-Type': 'application/json',
+                              Authorization: `Bearer ${token}`,
+                         },
+                    });
+
+                    if (response.status === 200) {
+                         setLoading(false);
+                         const fetchedNotes = response.data.data;
+                         setAllNotes(fetchedNotes);
+                         setFilteredNotes(fetchedNotes);
+                    } else {
+                         setLoading(false);
+                         toast.error(response.data.message);
+                         logout();
+                    }
+               } catch (error) {
+                    setLoading(false);
+                    toast.error(error.message);
+                    logout();
+               }
+          };
+
+          fetchNotes();
+     }, [token, url, id]);
+
+     const handleFilter = (category) => {
+          setActiveFilter(category);
+          if (category === 'all') {
+               setFilteredNotes(allNotes);
+          } else {
+               const filtered = allNotes.filter(note => note.category === category);
+               setFilteredNotes(filtered);
+          }
+     };
+
+     const handleUpdateNotes = (deletedNoteId) => {
+          const updatedNotes = allNotes.filter(note => note.id !== deletedNoteId);
+          setAllNotes(updatedNotes);
+          setFilteredNotes(updatedNotes);
+     };
+
+     return (
+          <>
+               <div className="flex justify-center space-x-2 mb-4 p-2 bg-gray-100">
+                    {['all', 'general', 'personal', 'work', 'ideas'].map(category => (
+                         <button
+                              key={category}
+                              onClick={() => handleFilter(category)}
+                              className={`px-4 py-2 rounded-full text-sm ${activeFilter === category
+                                   ? 'bg-color1 text-white'
+                                   : 'bg-gray-200 text-gray-700'
+                                   }`}
+                         >
+                              {category.charAt(0).toUpperCase() + category.slice(1)}
+                         </button>
+                    ))}
+               </div>
+
+               {loading ? (
+                    <div className="text-center text-gray-500 mt-10">
+                         Loading notes...
+                    </div>
+               ) : (
+                    <>
+                         <NoteEach
+                              notes={filteredNotes}
+                              onUpdateNotes={handleUpdateNotes}
+                         />
+
+                    </>
+               )}
+          </>
+     );
+};
+
+export default NotesAll;
+```,```
+/* eslint-disable react/prop-types */
+import { toast } from 'react-hot-toast';
+import { BiEdit, BiTrash } from 'react-icons/bi';
+import { AiFillTag } from 'react-icons/ai';
+import ShowNote from './ShowNote';
+import { useState } from 'react';
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+const NoteEach = ({ notes = [], onUpdateNotes }) => {
+     const [selectedNote, setSelectedNote] = useState(null);
+     const [isOpen, setisopen] = useState(false);
+
+     const deleteNote = async (noteId) => {
+          try {
+               const token = localStorage.getItem('token');
+
+               const requestOptions = {
+                    method: "DELETE",
+                    headers: {
+                         'Content-Type': 'application/json',
+                         Authorization: `Bearer ${token}`,
+                    },
+               };
+
+               let response = await fetch(`${API_URL}/notes/delete/${noteId}`, requestOptions);
+
+               if (response.status === 200) {
+                    toast.success("Note deleted successfully.");
+                    onUpdateNotes(noteId);
+               } else {
+                    toast.error("Failed to delete note.");
+               }
+          } catch (error) {
+               console.error("Error deleting note:", error);
+               toast.error("Failed to delete note.");
+          }
+     };
+
+
+     const getCategoryColor = (category) => {
+          switch (category) {
+               case 'personal': return 'bg-color2/20 text-color2';
+               case 'work': return 'bg-color1 text-white';
+               case 'ideas': return 'bg-color1/20 text-color1';
+               default: return 'bg-gray-200 text-color1';
+          }
+     };
+
+     // Added null checks and default empty array
+     if (!notes || !Array.isArray(notes)) {
+          return (
+               <div className="text-center text-gray-500 p-4">
+                    No notes available or invalid data.
+               </div>
+          );
+     }
+
+     const handleNoteClick = (note) => {
+          setSelectedNote(note);
+          setisopen(true);
+     }
+
+     return (
+          <>
+
+               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 pb-24">
+                    {notes.length === 0 ? (
+                         <p className="text-center text-gray-500 col-span-full">No notes available.</p>
+                    ) : (
+                         notes.map((note) => (
+                              <div
+                                   key={note.id}
+                                   className="bg-white shadow-md rounded-lg p-4 relative border"
+                                   onClick={() => {
+                                        handleNoteClick(note);
+                                   }}
+
+                              >
+                                   <div className="flex justify-between items-start mb-2">
+                                        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${getCategoryColor(note.category)}`}>
+                                             <AiFillTag className="mr-1" />
+                                             {note.category || 'Uncategorized'}
+                                        </div>
+                                        <div className="flex space-x-2">
+                                             <button
+                                                  className="text-color1 hover:bg-color1 p-1 rounded-full"
+                                                  onClick={() => {/* Edit functionality */ }}
+                                             >
+                                                  <BiEdit size={20} />
+                                             </button>
+                                             <button
+                                                  className="text-red-500 hover:bg-red-100 p-1 rounded-full"
+                                                  onClick={() => deleteNote(note.id)}
+                                             >
+                                                  <BiTrash size={20} />
+                                             </button>
+                                        </div>
+                                   </div>
+
+                                   <div>
+                                        <h2 className="font-bold text-lg mb-2">{note.title || 'Untitled Note'}</h2>
+                                        <p className="text-sm text-gray-600 line-clamp-3">
+                                             {note.contet ?
+                                                  (note.contet.length > 500
+                                                       ? note.contet.substring(0, 500) + '...'
+                                                       : note.contet)
+                                                  : ''}
+                                        </p>
+                                   </div>
+
+                                   <div className="text-xs text-gray-400 mt-2">
+                                        Created: {note.created_at
+                                             ? new Date(note.created_at).toLocaleDateString()
+                                             : 'Unknown date'}
+                                   </div>
+                              </div>
+                         ))
+                    )}
+               </div>
+
+               <ShowNote notes={selectedNote} isOpen={isOpen} set={setisopen} />
+          </>
+     );
+};
+
+
+export default NoteEach;
+```,```
+/* eslint-disable react/prop-types */
+import { toast } from 'react-hot-toast';
+import { BiEdit, BiTrash } from 'react-icons/bi';
+import { AiFillTag } from 'react-icons/ai';
+import { CgClose } from 'react-icons/cg';
+import CreateNote from './CreateNote';
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+const ShowNote = ({ notes, isOpen, set }) => {
+     const deleteNote = async (noteId) => {
+          try {
+               const token = localStorage.getItem('token');
+
+               const requestOptions = {
+                    method: "DELETE",
+                    headers: {
+                         'Content-Type': 'application/json',
+                         Authorization: `Bearer ${token}`,
+                    },
+               };
+
+               let response = await fetch(`${API_URL}/notes/delete/${noteId}`, requestOptions);
+
+               if (response.status === 200) {
+                    toast.success("Note deleted successfully.");
+               } else {
+                    toast.error("Failed to delete notes.");
+               }
+          } catch (error) {
+               console.error("Error deleting note:", error);
+               toast.error("Failed to delete notes.");
+          }
+     };
+
+     const getCategoryColor = (category) => {
+          switch (category) {
+               case 'personal': return 'bg-color2/20 text-color2';
+               case 'work': return 'bg-color1 text-white';
+               case 'ideas': return 'bg-color1/20 text-color1';
+               default: return 'bg-gray-200 text-color1';
+          }
+     };
+
+     const handleNoteClick = (note) => {
+          return (
+               <CreateNote notes={note} isOpen={true} />
+          )
+     }
+
+     return (
+          <>
+               {isOpen && (
+                    <div className="fixed top-28 p-4 bg-white shadow-md rounded-lg w-5/6 left-1/2 transform -translate-x-1/2 border border-color1 z-50">
+                         <div className='flex justify-between items-center mb-4'>
+                              <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${getCategoryColor(notes.category)}`}>
+                                   <AiFillTag className="mr-1" />
+                                   {notes.category || 'Uncategorized'}
+                              </div>
+                              <h2 className="font-bold text-xl mb-2">{notes.title || 'Untitled Note'}</h2>
+                              <span
+                                   className='cursor-pointer text-red-500'
+                                   onClick={() => set(false)}
+                              >
+                                   <CgClose size={24} />
+                              </span>
+                         </div>
+                         <div className="flex justify-between items-start mb-2">
+                              <div className="text-xs text-gray-400 mt-2">
+                                   Created: {notes.created_at
+                                        ? new Date(notes.created_at).toLocaleDateString()
+                                        : 'Unknown date'}
+                              </div>
+                              <div className="flex space-x-2">
+                                   <button
+                                        className="text-color1 hover:bg-color1 p-1 rounded-full"
+                                        onClick={() => {()=> handleNoteClick(notes)}}
+                                   >
+                                        <BiEdit size={20} />
+                                   </button>
+                                   <button
+                                        className="text-red-500 hover:bg-red-100 p-1 rounded-full"
+                                        onClick={() => deleteNote(notes.id)}
+                                   >
+                                        <BiTrash size={20} />
+                                   </button>
+                              </div>
+                         </div>
+                         <p className="text-sm text-gray-600 max-h-96 overflow-y-auto">
+                              {notes.contet}
+                         </p>
+                    </div>
+               )}
+          </>
+     );
+};
+
+
+export default ShowNote;
+```fix all bugs

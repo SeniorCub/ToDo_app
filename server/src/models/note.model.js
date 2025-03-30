@@ -1,8 +1,8 @@
 import db from '../config/database.js'
 
-export const addNote = async (title, contet, user_id) => {
+export const addNote = async (title, contet, category, user_id) => {
      try {
-          const [result] = await db.query('INSERT INTO note_tb (title, contet, user_id) VALUES (?,?,?)', [title,contet,user_id])
+          const [result] = await db.query('INSERT INTO note_tb (title, contet, category, user_id) VALUES (?,?,?,?)', [title,contet,category,user_id])
           return result
      } catch (error) {
           console.error(error.message);

@@ -63,7 +63,7 @@ const Dashboard = () => {
 
      return (
           <div className="bg-color1 text-white h-svh w-dvw overflow-hidden flex flex-col">
-               <div className="basis-1/3 space-y-5 p-10 text-left">
+               <div className="basis-1/12 space-y-5 p-5 text-left">
                     <div className="flex justify-between items-center">
                          <div>
                               <h1 className="font-semibold text-2xl">Good {date < 12 ? "Morning" : date < 18 ? "Afternoon" : "Evening"},</h1>
@@ -76,7 +76,7 @@ const Dashboard = () => {
                                    )}
                               </p>
                          </div>
-                         <div className="avatar">
+                         <div className="avatar cursor-pointer" onClick={()=> logout()}>
                               <div className="w-12 rounded-full">
                                    <img
                                         src={user?.photoUrl ?? "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
@@ -88,12 +88,12 @@ const Dashboard = () => {
                     </div>
                </div>
 
-               <div className="omo flex flex-col p-10 space-y-10">
-                    <Link to="/notes" className="bg-color1 md:mt-10 text-white w-full md:w-1/2 p-6 rounded-3xl text-xl flex justify-between items-center">
-                         My Notes <MdOutlineNoteAlt />
-                    </Link>
+               <div className="omo flex flex-col p-10 space-y-10 md:pt-28">
                     <Link to="/tasks" className="bg-color1 text-white w-full md:w-1/2 p-6 rounded-3xl text-xl flex justify-between items-center">
                          My Tasks <FaTasks />
+                    </Link>
+                    <Link to="/notes" className="bg-color1 md:mt-10 text-white w-full md:w-1/2 p-6 rounded-3xl text-xl flex justify-between items-center">
+                         My Notes <MdOutlineNoteAlt />
                     </Link>
                     <Link to="/diary" className="bg-color1 text-white w-full md:w-1/2 p-6 rounded-3xl text-xl flex justify-between items-center">
                          My Diary <BiBookmarkHeart />
