@@ -4,12 +4,14 @@ import { BiEdit, BiTrash } from 'react-icons/bi';
 import { AiFillTag } from 'react-icons/ai';
 import ShowNote from './ShowNote';
 import { useState } from 'react';
+import CreateNote from './CreateNote';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const NoteEach = ({ notes = [], onUpdateNotes }) => {
      const [selectedNote, setSelectedNote] = useState(null);
      const [isOpen, setisopen] = useState(false);
+     const [isEditing, setIsEditing] = useState(false);
 
      const deleteNote = async (noteId) => {
           try {
@@ -23,7 +25,7 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                     },
                };
 
-               let response = await fetch(`${API_URL}/notes/delete/${noteId}`, requestOptions);
+               let response = await fetch(`${API_URL}/note/delete/${noteId}`, requestOptions);
 
                if (response.status === 200) {
                     toast.success("Note deleted successfully.");
@@ -35,6 +37,11 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                console.error("Error deleting note:", error);
                toast.error("Failed to delete note.");
           }
+     };
+
+     const handleEditClick = () => {
+          setSelectedNote(notes); // Set the current note for editing
+          setIsEditing(true); // Open CreateNote modal
      };
 
 
@@ -71,11 +78,7 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                          notes.map((note) => (
                               <div
                                    key={note.id}
-                                   className="bg-white shadow-md rounded-lg p-4 relative border"
-                                   onClick={() => {
-                                        handleNoteClick(note);
-                                   }}
-
+                                   className="bg-white shadow-md rounded-lg p-4 relative border w-full"
                               >
                                    <div className="flex justify-between items-start mb-2">
                                         <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${getCategoryColor(note.category)}`}>
@@ -83,10 +86,7 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                                              {note.category || 'Uncategorized'}
                                         </div>
                                         <div className="flex space-x-2">
-                                             <button
-                                                  className="text-color1 hover:bg-color1 p-1 rounded-full"
-                                                  onClick={() => {/* Edit functionality */ }}
-                                             >
+                                             <button className="text-color1 p-1 rounded-full cursor-pointer" onClick={handleEditClick}>
                                                   <BiEdit size={20} />
                                              </button>
                                              <button
@@ -98,11 +98,11 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                                         </div>
                                    </div>
 
-                                   <div>
-                                        <h2 className="font-bold text-lg mb-2">{note.title || 'Untitled Note'}</h2>
-                                        <p className="text-sm text-gray-600 line-clamp-3">
-                                             {note.contet ?
-                                                  (note.contet.length > 500
+                                   <div className='w-full' onClick={() => handleNoteClick(note)}>
+                                        <h2 className="font-bold text-lg mb-2">{note.title || ''}</h2>
+                                        <p className="text-sm text-gray-600 line-clamp-3 w-full break-words break-all">
+                                             {note.contet
+                                                  ? (note.contet.length > 500
                                                        ? note.contet.substring(0, 500) + '...'
                                                        : note.contet)
                                                   : ''}
@@ -120,6 +120,14 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                </div>
 
                <ShowNote notes={selectedNote} isOpen={isOpen} set={setisopen} />
+
+               {isEditing && (
+                    <CreateNote
+                         isOpen={isEditing}
+                         setIsOpen={setIsEditing}
+                         notes={selectedNote} // Pass the selected note for editing
+                    />
+               )}
           </>
      );
 };

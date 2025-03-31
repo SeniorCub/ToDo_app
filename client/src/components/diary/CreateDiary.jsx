@@ -1,7 +1,10 @@
 import { useState, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { BiMicrophone, BiMicrophoneOff, BiSave } from 'react-icons/bi';
 import { BsFileText } from 'react-icons/bs';
 import { CgClose } from 'react-icons/cg';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const CreateDiary = () => {
      const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +38,7 @@ const CreateDiary = () => {
                setIsRecording(true);
           } catch (err) {
                console.error('Error accessing microphone', err);
-               alert('Could not access microphone. Please check permissions.');
+               toast.error('Could not access microphone. Please check permissions.');
           }
      };
 
@@ -46,19 +49,81 @@ const CreateDiary = () => {
           }
      };
 
-     const handleSaveNote = () => {
-          // Here you would typically save the note to a backend or local storage
-          const noteData = {
-               type: noteType,
-               content: noteType === 'text' ? textNote : audioRecording,
-               timestamp: new Date(`${selectedDateTime.date}T${selectedDateTime.time}`).toISOString()
-          };
+     const handleSaveNote = async () => {
+          try {
+               // Get the current user ID from your auth system
+               const id = localStorage.getItem('id')
 
-          console.log('Saving note:', noteData);
-          // Reset form and close
-          setTextNote('');
-          setAudioRecording(null);
-          setIsOpen(false);
+               let response;
+
+               if (noteType === 'text') {
+                    response = await fetch(`${API_URL}/diary/create`, {
+                         method: 'POST',
+                         headers: {
+                              'Content-Type': 'application/json',
+                              'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token auth
+                         },
+                         body: JSON.stringify({
+                              user_id: id,
+                              type: noteType,
+                              content: textNote,
+                              created_at: new Date(`${selectedDateTime.date}T${selectedDateTime.time}`).toISOString()
+                         })
+                    });
+               } else {
+                    // For audio, we need to use FormData to handle the file
+                    const formData = new FormData();
+
+                    // Convert the audio blob URL back to a file
+                    try {
+                         const audioBlob = await fetch(audioRecording).then(r => r.blob());
+
+                         // Create a File object with a proper type
+                         const audioFile = new File(
+                              [audioBlob],
+                              'recording.webm',
+                              { type: audioBlob.type || 'audio/webm' }
+                         );
+                         formData.append('audioFile', audioFile);
+
+                         formData.append('user_id', id);
+                         formData.append('type', noteType);
+                         formData.append('created_at', new Date(`${selectedDateTime.date}T${selectedDateTime.time}`).toISOString());
+
+                         response = await fetch(`${API_URL}/diary/create`, {
+                              method: 'POST',
+                              headers: {
+                                   'Authorization': `Bearer ${localStorage.getItem('token')}`
+                              },
+                              body: formData
+                         });
+                    } catch (error) {
+                         console.error("Error processing audio:", error);
+                         toast.error('Error processing audio recording. Please try again.');
+                    }
+               }
+
+               const data = await response.json();
+
+               if (response.ok) {
+                    // Show success message
+                    toast.success('Diary entry saved successfully!');
+
+                    // Reset form and close
+                    setTimeout(() => {
+                         setTextNote('');
+                         setAudioRecording(null);
+                         setIsOpen(false);
+                         window.location.reload();
+                    }, 3000);
+               } else {
+                    // Show error message
+                    toast.error(`Error: ${data.message}`);
+               }
+          } catch (error) {
+               console.error('Error saving diary entry:', error);
+               toast.error('Failed to save diary entry. Please try again.');
+          }
      };
 
      const clearAudioRecording = () => {
@@ -68,7 +133,7 @@ const CreateDiary = () => {
      return (
           <>
                <button
-                    className="bg-indigo-600 w-16 h-16 flex flex-col justify-center items-center rounded-full text-white fixed right-4 bottom-4 shadow-lg hover:bg-indigo-700 transition-colors"
+                    className="bg-color1 w-16 h-16 flex flex-col justify-center items-center rounded-full text-white fixed right-4 bottom-4 shadow-lg hover:bg-indigo-700 transition-colors"
                     onClick={() => setIsOpen(!isOpen)}
                >
                     <BsFileText className="w-8 h-8" />
@@ -78,7 +143,7 @@ const CreateDiary = () => {
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                          <div className="bg-white rounded-lg w-11/12 max-w-md p-6 max-h-[90vh] overflow-y-auto">
                               <div className="flex justify-between items-center mb-4">
-                                   <h2 className="text-2xl font-bold text-indigo-600">Create Diary Note</h2>
+                                   <h2 className="text-2xl font-bold text-color1">Create Diary Note</h2>
                                    <button
                                         onClick={() => setIsOpen(false)}
                                         className="text-red-500 hover:bg-red-100 rounded-full p-1"
@@ -91,14 +156,14 @@ const CreateDiary = () => {
                               <div className="flex justify-center mb-4">
                                    <div className="flex bg-gray-100 rounded-full p-1">
                                         <button
-                                             className={`px-4 py-2 rounded-full transition-colors ${noteType === 'text' ? 'bg-indigo-600 text-white' : 'text-gray-600'
+                                             className={`px-4 py-2 rounded-full transition-colors ${noteType === 'text' ? 'bg-color1 text-white' : 'text-gray-600'
                                                   }`}
                                              onClick={() => setNoteType('text')}
                                         >
                                              Text Note
                                         </button>
                                         <button
-                                             className={`px-4 py-2 rounded-full transition-colors ${noteType === 'audio' ? 'bg-indigo-600 text-white' : 'text-gray-600'
+                                             className={`px-4 py-2 rounded-full transition-colors ${noteType === 'audio' ? 'bg-color1 text-white' : 'text-gray-600'
                                                   }`}
                                              onClick={() => setNoteType('audio')}
                                         >
@@ -122,7 +187,7 @@ const CreateDiary = () => {
                                                   onClick={isRecording ? stopAudioRecording : startAudioRecording}
                                                   className={`w-20 h-20 rounded-full ${isRecording
                                                        ? 'bg-red-500 text-white'
-                                                       : 'bg-indigo-600 text-white'
+                                                       : 'bg-color1 text-white'
                                                        } flex items-center justify-center`}
                                              >
                                                   {isRecording ? <BiMicrophoneOff /> : <BiMicrophone />}
@@ -172,7 +237,7 @@ const CreateDiary = () => {
                               <button
                                    onClick={handleSaveNote}
                                    disabled={noteType === 'text' ? !textNote : !audioRecording}
-                                   className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center"
+                                   className="w-full py-3 bg-color1 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center"
                               >
                                    <BiSave className="mr-2" /> Save Diary Note
                               </button>
