@@ -21,6 +21,7 @@ export const createNote = async (req, res) => {
           }
      } catch (error) {
           console.error(error.message)
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 }
 
@@ -49,6 +50,7 @@ export const editNote = async (req, res) => {
           }
      } catch (error) {
           console.error(error.message)
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 }
 
@@ -64,7 +66,9 @@ export const fetchallNotes = async (req, res) => {
                data: result
           })
      } catch (error) {
-          console.error(error.message);
+          console.error(error.message)
+          return res.status(500).json({ message: 'Server error', error: error.message });
+     ;
      }
 }
 
@@ -80,7 +84,9 @@ export const fetchNote = async (req, res) => {
                data: result
           })
      } catch (error) {
-          console.error(error.message);
+          console.error(error.message)
+          return res.status(500).json({ message: 'Server error', error: error.message });
+     ;
      }
 }
 
@@ -101,6 +107,7 @@ export const deleteNote = async (req, res) => {
           }
      } catch (error) {
           console.error(error.message)
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 }
 
@@ -121,5 +128,6 @@ export const favNote = async (req, res) => {
           }
      } catch (error) {
           console.error(error.message)
+          return res.status(500).json({ message: 'Server error', error: error.message });
      } 
 }

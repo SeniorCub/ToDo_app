@@ -9,7 +9,7 @@ router.post('/create', protect, createNote)
 router.get('/allnotes/:user_id', protect, fetchallNotes)
 router.get('/note/:id', protect, fetchNote)
 router.delete('/delete/:id', protect, deleteNote)
-router.put('/edit/:id', protect, editNote)
+router.post('/edit/:id', protect, editNote)
 router.put('/fav/:id', protect, favNote)
 
 

@@ -1,8 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import userRouter from './src/routes/user.route.js';
-import taskRouter from './src/routes/task.route.js';
-import noteRouter from './src/routes/note.route.js';
+import userRouter from './src/routes/user.routes.js';
+import taskRouter from './src/routes/task.routes.js';
+import noteRouter from './src/routes/note.routes.js';
+import diaryRouter from './src/routes/diary.routes.js';
 import dotenv from 'dotenv';
 import './src/cron.js';
 import path from 'path';
@@ -39,6 +40,9 @@ app.get('/', (req, res) => {
 app.use('/api/user', userRouter);
 app.use('/api/task', taskRouter);
 app.use('/api/note', noteRouter);
+app.use('/api/diary', diaryRouter);
+
+app.use('/uploads', express.static(path.join(__dirname, 'src', 'uploads')));
 
 // Catch-all route for errors
 app.get('*', (req, res) => {

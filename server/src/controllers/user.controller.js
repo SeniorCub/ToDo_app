@@ -36,8 +36,9 @@ export const register = async (req, res) => {
                     data: userCreated[0]
                });
           }
-     } catch (erroror) {
-          console.log(erroror);
+     } catch (error) {
+          console.error(error);
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 };
 
@@ -81,8 +82,9 @@ export const login = async (req, res, next) => {
                token: token,
                data: user[0]
           });
-     } catch (erroror) {
-          next(erroror);
+     } catch (error) {
+          console.error(error)
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 };
 
@@ -98,7 +100,8 @@ export const detailsUser = async (req, res, next) => {
                data: user[0]
           });
      } catch (error) {
-          next(error);
+          console.error(error)
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 };
 
@@ -119,6 +122,7 @@ export const deleteAUser = async (req, res, next) => {
                });
           }
      } catch (error) {
-          next(error);
+          console.error(error)
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 };

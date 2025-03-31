@@ -19,6 +19,7 @@ export const createTask = async (req, res) => {
            }
      } catch (error) {
           console.error(error.message);
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 }
 
@@ -35,6 +36,7 @@ export const fetchTask = async (req, res) => {
           })
      } catch (error) {
           console.error(error.message);
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 }
 
@@ -50,6 +52,7 @@ export const fetchAtask = async (req, res) => {
                data: result})
      } catch (error) {
           console.error(error.message);
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 }
 
@@ -71,6 +74,7 @@ export const completeTask = async (req, res) => {
            }
      } catch (error) {
           console.error(error.message);
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 }
 
@@ -92,6 +96,7 @@ export const deleteTasks = async (req, res) => {
           }
      } catch (error) {
           console.error(error.message);
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 }
 
@@ -113,5 +118,6 @@ export const editTask = async (req, res) => {
            }
      } catch (error) {
           console.error(error.message);
+          return res.status(500).json({ message: 'Server error', error: error.message });
      }
 }
