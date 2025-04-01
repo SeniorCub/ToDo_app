@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-key */
 /* eslint-disable react/prop-types */
 import { ListEach } from './ListEach';
 
@@ -12,7 +11,7 @@ const ListsAll = ({ tasks }) => {
                          <div className="grid md:grid-cols-2 gap-4 lg:container">
                               {
                                    tasks.map((task) => (
-                                        <ListEach task={task} />
+                                        <ListEach task={task} key={task.id} />
                                    ))
                               }
                          </div>

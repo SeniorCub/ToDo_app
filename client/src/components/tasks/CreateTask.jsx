@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import axios from 'axios';
@@ -16,21 +17,26 @@ const validationSchema = Yup.object().shape({
      completed: false,
 });
 
-const CreateTask = () => {
+const CreateTask = ({ tasks, isOpen, setIsOpen }) => {
+     const [isOpened, setIsOpened] = useState(isOpen);
 
-     const [isOpen, setIsOpened] = useState(false);
+     useEffect(() => {
+          setIsOpened(isOpen);
+     }, [isOpen]);
+
 
      const formik = useFormik({
           initialValues: {
-               title: '',
-               description: '',
-               date: '',
-               time: '',
+               title: tasks?.title || '',
+               description: tasks?.description || '',
+               date: tasks?.date.split("T")[0] || '',
+               time: tasks?.time || '',
                completed: false,
           },
+          enableReinitialize: true,
           validationSchema,
           onSubmit: async (values, { resetForm }) => {
-               const url = `${API_URL}/task/create`;
+               const url = `${API_URL}/task/${tasks?.id ? `edit/${tasks.id}` : 'create'}`;;
                const id = localStorage.getItem('id');
                const token = localStorage.getItem('token');
                const data = {
@@ -48,28 +54,31 @@ const CreateTask = () => {
                               Authorization: `Bearer ${token}`,
                          }
                     });
+
                     if (response.status === 200) {
                          toast.success(response.data.message);
                          resetForm();
                          setIsOpened(false);
+                         setIsOpen(false); // Close modal on success
                          window.location.reload();
                     }
                } catch (error) {
-                    toast.error(error.message);
+                    console.error('Error creating/updating note:', error);
+                    toast.error(error.response?.data?.message || 'Failed to save note');
                }
           }
      });
 
      return (
           <>
-               <button className="bg-color1 w-16 h-16 flex flex-col justify-center items-center rounded-full text-white fixed right-4 bottom-4 border-none" onClick={() => setIsOpened(!isOpen)}>
+               <button className="bg-color1 w-16 h-16 flex flex-col justify-center items-center rounded-full text-white fixed right-4 bottom-4 z-50 border-none" onClick={() => setIsOpened(!isOpen)}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" strokeWidth={3} stroke="#fff" className="w-8 h-8">
                          <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
                     </svg>
                </button>
 
-               {isOpen && (
-                    <div className="fixed top-28 p-4 bg-color1 shadow-md rounded-lg text-white w-5/6 left-1/2 right-3 transform -translate-x-1/2">
+               {isOpened && (
+                    <div className="fixed top-28 p-4 bg-color1 shadow-md rounded-lg text-white w-5/6 left-1/2 right-3 transform -translate-x-1/2 z-50">
                          <div className='flex justify-between items-center'>
                               <span></span><h1 className="text-center text-2xl font-bold">Create Task</h1> <span className='border rounded-full text-red-500 border-red-500' onClick={() => setIsOpened(false)}><CgClose /></span>
                          </div>
@@ -82,7 +91,7 @@ const CreateTask = () => {
                                    {formik.touched.title && formik.errors.title ? (<p className="text-red-500 text-xs">{formik.errors.title}</p>) : null}
                                    <input type="text" name="title" value={formik.values.title} onChange={formik.handleChange} placeholder="Task title" className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
                                    {formik.touched.description && formik.errors.description ? (<p className="text-red-500 text-xs">{formik.errors.description}</p>) : null}
-                                   <textarea name="description" value={formik.values.description} onChange={formik.handleChange} placeholder="Task description" className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
+                                   <textarea name="description" value={formik.values.description} onChange={formik.handleChange} placeholder="Task description" className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg h-56 resize-none" />
 
                                    <div className="flex space-x-2">
                                         {formik.touched.time && formik.errors.time ? (<p className="text-red-500 text-xs">{formik.errors.time}</p>) : null}
@@ -91,7 +100,9 @@ const CreateTask = () => {
                                         <input type="date" name="date" value={formik.values.date} onChange={formik.handleChange} className="w-1/2 p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />
                                    </div>
 
-                                   <button type="submit" className="w-full py-2 px-4 bg-white text-color1 font-bold rounded-lg"> Add Task </button>
+                                   <button type="submit" className="w-full py-2 px-4 bg-white text-color1 font-bold rounded-lg">
+                                        {tasks ? 'Update Task' : 'Create Task'}
+                                   </button>
                               </div>
                          </form>
                     </div>

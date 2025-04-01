@@ -3,6 +3,7 @@ import { BsFileText } from 'react-icons/bs';
 import { BiMicrophone, BiTrash, BiPlay, BiPause } from 'react-icons/bi';
 import { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import ShowDiary from './ShowDiary';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -19,6 +20,13 @@ const DiaryEntry = ({ entry, data }) => {
      const [currentTime, setCurrentTime] = useState(0);
      const [duration, setDuration] = useState(0);
      const audioRef = useRef(null);
+     const [selectedDiary, setSelectedDiary] = useState(null);
+     const [isOpen, setisopen] = useState(false);
+
+     const handleDiaryClick = (data) => {
+          setSelectedDiary(data);
+          setisopen(true);
+     }
 
      const getAudioSrc = () => {
           const baseUrl = API_URL.split('api')[0];
@@ -114,81 +122,93 @@ const DiaryEntry = ({ entry, data }) => {
      };
 
      return (
-          <div className="bg-white shadow-md rounded-lg p-4 mb-4 relative">
-               <div className="flex justify-between items-center mb-2">
-                    <div className="flex items-center">
+          <>
+               <div className="bg-white shadow-md rounded-lg p-4 mb-4 relative">
+                    <div className="flex justify-between items-center mb-2">
+                         <div className="flex items-center">
+                              {entry === 'text' ? (
+                                   <BsFileText className="mr-2 text-color1" />
+                              ) : (
+                                   <BiMicrophone className="mr-2 text-color1" />
+                              )}
+                              <span className="text-sm text-gray-500">
+                                   {data.created_at.split("T")[1].split(":")[0] + ":" + data.created_at.split("T")[1].split(":")[1]}
+                                   {", " + data.created_at.split("T")[0]}
+                              </span>
+                         </div>
+                         <div className="flex space-x-2">
+                              <button
+                                   className="text-red-500 hover:bg-red-100 p-1 rounded-full"
+                                   onClick={() => handleDelete(data.id)}
+                              >
+                                   <BiTrash size={20} />
+                              </button>
+                         </div>
+                    </div>
+                    <div onClick={() => handleDiaryClick(data)} className='cursor-pointer'>
                          {entry === 'text' ? (
-                              <BsFileText className="mr-2 text-color1" />
+                              <p className="text-gray-600 line-clamp-3 w-full break-words break-all">
+                                   {data.content
+                                        ? (data.content.length > 500
+                                             ? data.content.substring(0, 500) + '...'
+                                             : data.content)
+                                        : ''}
+                              </p>
                          ) : (
-                              <BiMicrophone className="mr-2 text-color1" />
-                         )}
-                         <span className="text-sm text-gray-500">
-                              {data.created_at.split("T")[1].split(":")[0] + ":" + data.created_at.split("T")[1].split(":")[1]}
-                              {", " + data.created_at.split("T")[0]}
-                         </span>
-                    </div>
-                    <div className="flex space-x-2">
-                         <button
-                              className="text-red-500 hover:bg-red-100 p-1 rounded-full"
-                              onClick={() => handleDelete(data.id)}
-                         >
-                              <BiTrash size={20} />
-                         </button>
-                    </div>
-               </div>
-
-               {entry === 'text' ? (
-                    <p className="text-gray-800">{data.content}</p>
-               ) : (
-                    <div className="bg-gray-100 rounded-lg p-3 flex items-center space-x-3">
-                         <button
-                              onClick={togglePlayPause}
-                              className="bg-color1 text-white p-2 rounded-full hover:bg-opacity-90 transition-colors"
-                         >
-                              {isPlaying ? <BiPause size={20} /> : <BiPlay size={20} />}
-                         </button>
-                         <div className="flex-1 relative">
-                              <input
-                                   type="range"
-                                   min="0"
-                                   max="100"
-                                   value={progress}
-                                   onChange={handleProgressChange}
-                                   className="w-full h-1 bg-gray-300 rounded-full appearance-none cursor-pointer 
+                              <div className="bg-gray-100 rounded-lg p-3 flex items-center space-x-3">
+                                   <button
+                                        onClick={togglePlayPause}
+                                        className="bg-color1 text-white p-2 rounded-full hover:bg-opacity-90 transition-colors"
+                                   >
+                                        {isPlaying ? <BiPause size={20} /> : <BiPlay size={20} />}
+                                   </button>
+                                   <div className="flex-1 relative">
+                                        <input
+                                             type="range"
+                                             min="0"
+                                             max="100"
+                                             value={progress}
+                                             onChange={handleProgressChange}
+                                             className="w-full h-1 bg-gray-300 rounded-full appearance-none cursor-pointer 
                                    [&::-webkit-slider-thumb]:appearance-none 
                                    [&::-webkit-slider-thumb]:w-3 
                                    [&::-webkit-slider-thumb]:h-3 
                                    [&::-webkit-slider-thumb]:bg-color1 
                                    [&::-webkit-slider-thumb]:rounded-full"
-                              />
-                         </div>
-                         <span className="text-sm text-gray-600">
-                              {formatTime(currentTime)} / {duration && isFinite(duration) ? formatTime(duration) : '0:00'}
-                         </span>
-                         <audio
-                              ref={audioRef}
-                              src={getAudioSrc()}
-                              preload="metadata"
-                              onPlay={() => setIsPlaying(true)}
-                              onPause={() => setIsPlaying(false)}
-                              onEnded={() => {
-                                   setIsPlaying(false);
-                                   setProgress(0);
-                                   if (audioRef.current) {
-                                        audioRef.current.currentTime = 0;
-                                   }
-                              }}
-                              onError={(e) => {
-                                   console.error("Audio error:", e);
-                                   console.error("Audio error code:", e.target.error?.code);
-                                   console.error("Audio error message:", e.target.error?.message);
-                                   setDuration(0);
-                                   setCurrentTime(0);
-                              }}
-                         />
+                                        />
+                                   </div>
+                                   <span className="text-sm text-gray-600">
+                                        {formatTime(currentTime)} / {duration && isFinite(duration) ? formatTime(duration) : '0:00'}
+                                   </span>
+                                   <audio
+                                        ref={audioRef}
+                                        src={getAudioSrc()}
+                                        preload="metadata"
+                                        onPlay={() => setIsPlaying(true)}
+                                        onPause={() => setIsPlaying(false)}
+                                        onEnded={() => {
+                                             setIsPlaying(false);
+                                             setProgress(0);
+                                             if (audioRef.current) {
+                                                  audioRef.current.currentTime = 0;
+                                             }
+                                        }}
+                                        onError={(e) => {
+                                             console.error("Audio error:", e);
+                                             console.error("Audio error code:", e.target.error?.code);
+                                             console.error("Audio error message:", e.target.error?.message);
+                                             setDuration(0);
+                                             setCurrentTime(0);
+                                        }}
+                                   />
+                              </div>
+                         )}
                     </div>
-               )}
-          </div>
+               </div>
+
+               <ShowDiary diary={selectedDiary} isOpen={isOpen} set={setisopen} />
+
+          </>
      );
 }
 
