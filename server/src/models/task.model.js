@@ -47,7 +47,7 @@ export const deleteTask = async (id) => {
 
 export const correctTask = async (title, description, time, date, user_id, id) => {
      try {
-          const [result] = await db.query('UPDATE task_tb SET title = ?, description = ?, time = ?, date = ? WHERE id = ? AND user_id = ?', [title, description, time, date, id, user_id])
+          const [result] = await db.query('UPDATE task_tb SET title = ?, description = ?, time = ?, date = ?, isComplete = 0 WHERE id = ? AND user_id = ?', [title, description, time, date, id, user_id])
           return result
      } catch (error) {
           console.error(error.message);
