@@ -11,6 +11,12 @@ const connect = mysql.createPool({
      // socketPath: '/opt/lampp/var/mysql/mysql.sock'
 }).promise()
  
+if (connect) {
+     console.log('Database connected');
+} else {
+     console.error('Database not connected');
+     throw new Error('Database connection failed');
+}
 
 const [users] = await connect.query('SELECT * FROM user_tb')
 const [tasks] = await connect.query('SELECT * FROM task_tb')
