@@ -1,14 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { auth, provider } from "../config/firebase";
 import { signInWithPopup } from "firebase/auth";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const apiURL = import.meta.env.VITE_API_URL; // Ensure this is correctly set in `.env`
 
 export const useSignInWithGoogle = () => {
   const [loading, setLoading] = useState(false);
+  const [redirectToHome, setRedirectToHome] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (redirectToHome) {
+      navigate("/dashboard");
+    }
+  }, [redirectToHome, navigate]);
 
   const signInWithGoogle = async () => {
     setLoading(true);
@@ -27,7 +35,6 @@ export const useSignInWithGoogle = () => {
       const checkUserResponse = await axios.get(`${apiURL}/user/check?email=${user.email}`);
 
       if (checkUserResponse.data.exists) {
-        setLoading(true);
         toast.loading("User already exists. Logging in...", { icon: "ℹ️" });
         setTimeout(async () => {
           const loginResponse = await axios.post(`${apiURL}/user/login`, { email: user.email });
@@ -39,11 +46,10 @@ export const useSignInWithGoogle = () => {
           localStorage.setItem("email", response.data.email);
 
           setTimeout(() => {
-            <Navigate to="/dashboard" />;
+            setRedirectToHome(true);
           }, 2000);
         }, 2000);
       } else {
-        setLoading(true);
         // If user does not exist, create new account
         const response = await axios.post(`${apiURL}/user/create`, userData, {
           headers: { "Content-Type": "application/json" }
@@ -55,8 +61,8 @@ export const useSignInWithGoogle = () => {
         localStorage.setItem("id", responsee.data.id);
         localStorage.setItem("email", responsee.data.email);
 
-        setTimeout(() =>{
-          <Navigate to="/dashboard" />;
+        setTimeout(() => {
+          setRedirectToHome(true);
         }, 2000);
       }
     } catch (error) {
