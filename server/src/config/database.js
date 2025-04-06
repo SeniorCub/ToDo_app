@@ -24,14 +24,14 @@ if (connect) {
      throw new Error('Database connection failed');
 }
 
-const [users] = await connect.query('SELECT * FROM user_tb')
-const [tasks] = await connect.query('SELECT * FROM task_tb')
-const [notes] = await connect.query('SELECT * FROM note_tb')
-const [diarys] = await connect.query('SELECT * FROM diary_tb')
+// const [users] = await connect.query('SELECT * FROM user_tb')
+// const [tasks] = await connect.query('SELECT * FROM task_tb')
+// const [notes] = await connect.query('SELECT * FROM note_tb')
+// const [diarys] = await connect.query('SELECT * FROM diary_tb')
 
-console.log(users);
-console.log(tasks);
-console.log(notes);
-console.log(diarys);
+// console.log(users);
+// console.log(tasks);
+// console.log(notes);
+// console.log(diarys);
 
 export default connect

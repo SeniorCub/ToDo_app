@@ -3,6 +3,7 @@ import { auth, provider } from "../config/firebase";
 import { signInWithPopup } from "firebase/auth";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { Navigate } from "react-router-dom";
 
 const apiURL = import.meta.env.VITE_API_URL; // Ensure this is correctly set in `.env`
 
@@ -37,7 +38,9 @@ export const useSignInWithGoogle = () => {
           localStorage.setItem("id", response.data.id);
           localStorage.setItem("email", response.data.email);
 
-          setTimeout(() => window.location.replace("/dashboard"), 2000);
+          setTimeout(() => {
+            <Navigate to="/dashboard" />;
+          }, 2000);
         }, 2000);
       } else {
         setLoading(true);
@@ -52,7 +55,9 @@ export const useSignInWithGoogle = () => {
         localStorage.setItem("id", responsee.data.id);
         localStorage.setItem("email", responsee.data.email);
 
-        setTimeout(() => window.location.replace("/dashboard"), 2000);
+        setTimeout(() =>{
+          <Navigate to="/dashboard" />;
+        }, 2000);
       }
     } catch (error) {
       console.error("Google Sign-In Error:", error);
