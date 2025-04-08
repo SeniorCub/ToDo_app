@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const corsOptions = {
-     origin: 'http://weedtodo.rhinoguards.co.uk',
+     origin: 'https://weedtodo.rhinoguards.co.uk',
      // origin: 'https://weedtodo.vercel.app',
      //     origin: 'http://localhost:5173',
      // origin: 'http://192.168.0.148:5173', // Fixed typo: removed the 'I' after IP
