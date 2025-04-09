@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { BiMicrophone, BiMicrophoneOff, BiSave } from 'react-icons/bi';
 import { BsFileText } from 'react-icons/bs';
 import { CgClose } from 'react-icons/cg';
+import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,6 +19,7 @@ const CreateDiary = () => {
      });
      const mediaRecorderRef = useRef(null);
      const audioChunksRef = useRef([]);
+     const navigate = useNavigate();
 
      const startAudioRecording = async () => {
           try {
@@ -114,7 +116,7 @@ const CreateDiary = () => {
                          setTextNote('');
                          setAudioRecording(null);
                          setIsOpen(false);
-                         window.location.reload();
+                         navigate('/diary')
                     }, 3000);
                } else {
                     // Show error message
