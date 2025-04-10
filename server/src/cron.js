@@ -11,8 +11,9 @@ const __dirname = dirname(__filename);
 // Define the cron job (Runs every minute for testing)
 // schedule("* * * * *", async () => {
 // cron job every 5 minuts
-schedule("*/5 * * * *", async () => {
-     // schedule("0 0 * * *", async () => {
+// schedule("*/5 * * * *", async () => {
+// cron job evey hour
+schedule("0 * * * *", async () => {
 
      console.log("Running the cron job...");
 
